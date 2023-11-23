@@ -1,0 +1,89 @@
+using System;
+using NUnit.Framework;
+
+namespace GeometryLibrary
+{
+    public interface IShape
+    {
+        double GetArea();
+    }
+
+    public class Circle : IShape
+    {
+        public double Radius { get; }
+
+        public Circle(double radius)
+        {
+            Radius = radius;
+        }
+
+        public double GetArea()
+        {
+            return Math.PI * Radius * Radius;
+        }
+    }
+
+    public class Triangle : IShape
+    {
+        public double SideA { get; }
+        public double SideB { get; }
+        public double SideC { get; }
+
+        public Triangle(double sideA, double sideB, double sideC)
+        {
+            SideA = sideA;
+            SideB = sideB;
+            SideC = sideC;
+        }
+
+        public double GetArea()
+        {
+            // Используем формулу Герона для вычисления площади треугольника
+            double s = (SideA + SideB + SideC) / 2;
+            return Math.Sqrt(s * (s - SideA) * (s - SideB) * (s - SideC));
+        }
+
+        public bool IsRightTriangle()
+        {
+            // Проверка на прямоугольность треугольника по теореме Пифагора
+            double[] sides = { SideA, SideB, SideC };
+            Array.Sort(sides);
+
+            return Math.Pow(sides[0], 2) + Math.Pow(sides[1], 2) == Math.Pow(sides[2], 2);
+        }
+    }
+
+
+
+
+
+namespace GeometryLibrary.Tests
+    {
+        [TestFixture]
+        public class GeometryTests
+        {
+            [Test]
+            public void CircleAreaCalculation()
+            {
+                IShape circle = new Circle(5);
+                Assert.AreEqual(78.54, circle.GetArea(), 0.01);
+            }
+
+            [Test]
+            public void TriangleAreaCalculation()
+            {
+                IShape triangle = new Triangle(3, 4, 5);
+                Assert.AreEqual(6, triangle.GetArea(), 0.01);
+            }
+
+            [Test]
+            public void RightTriangleCheck()
+            {
+                IShape triangle = new Triangle(3, 4, 5);
+                Assert.IsTrue(((Triangle)triangle).IsRightTriangle());
+
+                triangle = new Triangle(1, 2, 3);
+                Assert.IsFalse(((Triangle)triangle).IsRightTriangle());
+            }
+        }
+    }
